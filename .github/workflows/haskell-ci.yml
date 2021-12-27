@@ -4,6 +4,7 @@ name: Haskell CI - Stack based
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest]
         resolver: [lts-14.27, lts-16.31, lts-18.6, nightly-2021-08-21]
 
     steps:
@@ -74,29 +75,34 @@ jobs:
         if: runner.os == 'macOS'
         run: git submodule update --init
 
-      - name: Build and test
+      - name: Build
         shell: bash
         if: runner.os != 'macOS'
         run: |
-          stack test \
+          stack install \
             --fast --no-terminal --skip-msys \
             --resolver=${{ matrix.resolver }} --system-ghc
 
-      - name: Build and test (macOS, dext)
+      - name: Build (macOS, dext)
         shell: bash
         if: runner.os == 'macOS'
         run: |
-          stack test \
+          stack install \
             --fast --no-terminal \
             --resolver=${{ matrix.resolver }} --system-ghc \
             --flag kmonad:dext \
             --extra-include-dirs=c_src/mac/Karabiner-DriverKit-VirtualHIDDevice/include/pqrs/karabiner/driverkit:c_src/mac/Karabiner-DriverKit-VirtualHIDDevice/src/Client/vendor/include
 
-      - name: Build and test (macOS, kext)
+      - name: Build (macOS, kext)
         shell: bash
         if: runner.os == 'macOS'
         run: |
-          stack test \
+          stack install \
             --fast --no-terminal \
             --resolver=${{ matrix.resolver }} --system-ghc \
             --flag kmonad:kext --extra-include-dirs=c_src/mac/Karabiner-VirtualHIDDevice/dist/include
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: kmonad.exe - ${{ matrix.os }} - ${{ matrix.resolver }}
+          path: C:\Users\runneradmin\AppData\Roaming\local\bin\kmonad.exe
