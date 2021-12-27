@@ -97,7 +97,7 @@ jobs:
         shell: bash
         if: runner.os == 'macOS'
         run: |
-          stack build \
+          stack install \
             --fast --no-terminal \
             --resolver=${{ matrix.resolver }} --system-ghc \
             --flag kmonad:kext --extra-include-dirs=c_src/mac/Karabiner-VirtualHIDDevice/dist/include
