@@ -105,4 +105,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: kmonad.exe
-          path: kmonad.exe
+          path: C:\Users\runneradmin\AppData\Roaming\local\bin\kmonad.exe
